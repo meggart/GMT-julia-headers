@@ -61,6 +61,12 @@ const GMT_OPT_PARAMETER = 45
 const GMT_OPT_INFILE = 60
 const GMT_OPT_OUTFILE = 62
 # end enum ANONYMOUS_3
+type GMT_OPTION
+    option::Uint8
+    arg::Ptr{Uint8}
+    next::Ptr{GMT_OPTION}
+    previous::Ptr{GMT_OPTION}
+end
 # begin enum ANONYMOUS_4
 typealias ANONYMOUS_4 Uint32
 const GMT_IS_FILE = 0
@@ -261,6 +267,89 @@ const GMT_GRID_REMARK_LEN160 = 160
 const GMT_GRID_NAME_LEN256 = 256
 const GMT_GRID_HEADER_SIZE = 892
 # end enum ANONYMOUS_29
+bitstype int(WORD_SIZE/8)*sizeof(Cdouble)*4 Array_4_Cdouble
+bitstype int(WORD_SIZE/8)*sizeof(Cdouble)*2 Array_2_Cdouble
+bitstype int(WORD_SIZE/8)*sizeof(Uint8)*80 Array_80_Uint8
+bitstype int(WORD_SIZE/8)*sizeof(Uint8)*320 Array_320_Uint8
+bitstype int(WORD_SIZE/8)*sizeof(Uint8)*160 Array_160_Uint8
+bitstype int(WORD_SIZE/8)*sizeof(Uint32)*4 Array_4_Uint32
+bitstype int(WORD_SIZE/8)*sizeof(Uint8)*256 Array_256_Uint8
+bitstype int(WORD_SIZE/8)*sizeof(Cint)*2 Array_2_Cint
+bitstype int(WORD_SIZE/8)*sizeof(Cint)*3 Array_3_Cint
+bitstype int(WORD_SIZE/8)*sizeof(Uint8)*4 Array_4_Uint8
+bitstype int(WORD_SIZE/8)*sizeof(Uint32)*2 Array_2_Uint32
+type GMT_GRID_HEADER
+    nx::Cint
+    ny::Cint
+    registration::Cint
+    wesn::Array_4_Cdouble
+    z_min::Cdouble
+    z_max::Cdouble
+    inc::Array_2_Cdouble
+    z_scale_factor::Cdouble
+    z_add_offset::Cdouble
+    x_units::Array_80_Uint8
+    y_units::Array_80_Uint8
+    z_units::Array_80_Uint8
+    title::Array_80_Uint8
+    command::Array_320_Uint8
+    remark::Array_160_Uint8
+    _type::Uint32
+    bits::Uint32
+    complex_mode::Uint32
+    mx::Uint32
+    my::Uint32
+    nm::Cint
+    size::Cint
+    n_alloc::Cint
+    arrangement::Uint32
+    n_bands::Uint32
+    pad::Array_4_Uint32
+    BC::Array_4_Uint32
+    grdtype::Uint32
+    name::Array_256_Uint8
+    varname::Array_80_Uint8
+    ProjRefPROJ4::Ptr{Uint8}
+    ProjRefWKT::Ptr{Uint8}
+    row_order::Cint
+    z_id::Cint
+    ncid::Cint
+    xy_dim::Array_2_Cint
+    t_index::Array_3_Cint
+    data_offset::Cint
+    stride::Uint32
+    nan_value::Cfloat
+    xy_off::Cdouble
+    r_inc::Array_2_Cdouble
+    flags::Array_4_Uint8
+    pocket::Ptr{Uint8}
+    bcr_threshold::Cdouble
+    bcr_interpolant::Uint32
+    bcr_n::Uint32
+    nxp::Uint32
+    nyp::Uint32
+    no_BC::Uint32
+    gn::Uint32
+    gs::Uint32
+    is_netcdf4::Uint32
+    z_chunksize::Array_2_Cint
+    z_shuffle::Uint32
+    z_deflate_level::Uint32
+    z_scale_autoadust::Uint32
+    z_offset_autoadust::Uint32
+    xy_adjust::Array_2_Uint32
+    xy_mode::Array_2_Uint32
+    xy_unit::Array_2_Uint32
+    xy_unit_to_meter::Array_2_Cdouble
+end
+type GMT_GRID
+    header::Ptr{GMT_GRID_HEADER}
+    data::Ptr{Cfloat}
+    id::Uint32
+    alloc_level::Uint32
+    alloc_mode::GMT_enum_alloc
+    extra::Ptr{None}
+end
 # begin enum ANONYMOUS_30
 typealias ANONYMOUS_30 Uint32
 const GMT_IS_POINT = 1
@@ -289,6 +378,111 @@ const GMT_IO_GAP = 32
 const GMT_IO_LINE_BREAK = 58
 const GMT_IO_NEXT_FILE = 64
 # end enum ANONYMOUS_32
+bitstype int(WORD_SIZE/8)*sizeof(Ptr{Uint8})*4 Array_4_Ptr
+type GMT_OGR
+    geometry::Uint32
+    n_aspatial::Uint32
+    region::Ptr{Uint8}
+    proj::Array_4_Ptr
+    _type::Ptr{Uint32}
+    name::Ptr{Ptr{Uint8}}
+    pol_mode::GMT_enum_pol
+    tvalue::Ptr{Ptr{Uint8}}
+    dvalue::Ptr{Cdouble}
+end
+type GMT_OGR_SEG
+    pol_mode::GMT_enum_pol
+    n_aspatial::Uint32
+    tvalue::Ptr{Ptr{Uint8}}
+    dvalue::Ptr{Cdouble}
+end
+bitstype int(WORD_SIZE/8)*sizeof(Ptr{Uint8})*2 Array_2_Ptr
+type GMT_DATASEGMENT
+    n_rows::Cint
+    n_columns::Cint
+    min::Ptr{Cdouble}
+    max::Ptr{Cdouble}
+    coord::Ptr{Ptr{Cdouble}}
+    label::Ptr{Uint8}
+    header::Ptr{Uint8}
+    mode::GMT_enum_out
+    pol_mode::GMT_enum_pol
+    id::Cint
+    n_alloc::Cint
+    range::Cint
+    pole::Cint
+    dist::Cdouble
+    lat_limit::Cdouble
+    ogr::Ptr{GMT_OGR_SEG}
+    next::Ptr{GMT_DATASEGMENT}
+    file::Array_2_Ptr
+end
+type GMT_DATATABLE
+    n_headers::Uint32
+    n_columns::Cint
+    n_segments::Cint
+    n_records::Cint
+    min::Ptr{Cdouble}
+    max::Ptr{Cdouble}
+    header::Ptr{Ptr{Uint8}}
+    segment::Ptr{Ptr{GMT_DATASEGMENT}}
+    id::Cint
+    n_alloc::Cint
+    mode::GMT_enum_out
+    ogr::Ptr{GMT_OGR}
+    file::Array_2_Ptr
+end
+type GMT_DATASET
+    n_tables::Cint
+    n_columns::Cint
+    n_segments::Cint
+    n_records::Cint
+    min::Ptr{Cdouble}
+    max::Ptr{Cdouble}
+    table::Ptr{Ptr{GMT_DATATABLE}}
+    id::Cint
+    n_alloc::Cint
+    geometry::Uint32
+    alloc_level::Uint32
+    io_mode::GMT_enum_dest
+    alloc_mode::GMT_enum_alloc
+    file::Array_2_Ptr
+end
+type GMT_TEXTSEGMENT
+    n_rows::Cint
+    record::Ptr{Ptr{Uint8}}
+    label::Ptr{Uint8}
+    header::Ptr{Uint8}
+    id::Cint
+    mode::GMT_enum_out
+    n_alloc::Cint
+    file::Array_2_Ptr
+    tvalue::Ptr{Ptr{Uint8}}
+end
+type GMT_TEXTTABLE
+    n_headers::Uint32
+    n_segments::Cint
+    n_records::Cint
+    header::Ptr{Ptr{Uint8}}
+    segment::Ptr{Ptr{GMT_TEXTSEGMENT}}
+    id::Cint
+    n_alloc::Cint
+    mode::GMT_enum_out
+    file::Array_2_Ptr
+end
+type GMT_TEXTSET
+    n_tables::Cint
+    n_segments::Cint
+    n_records::Cint
+    table::Ptr{Ptr{GMT_TEXTTABLE}}
+    id::Cint
+    n_alloc::Cint
+    geometry::Uint32
+    alloc_level::Uint32
+    io_mode::GMT_enum_dest
+    alloc_mode::GMT_enum_alloc
+    file::Array_2_Ptr
+end
 # begin enum ANONYMOUS_33
 typealias ANONYMOUS_33 Uint32
 const GMT_RGB = 0
@@ -313,8 +507,93 @@ typealias ANONYMOUS_36 Uint32
 const GMT_CPT_NO_BNF = 1
 const GMT_CPT_EXTEND_BNF = 2
 # end enum ANONYMOUS_36
+type GMT_LUT
+    z_low::Cdouble
+    z_high::Cdouble
+    i_dz::Cdouble
+    rgb_low::Array_4_Cdouble
+    rgb_high::Array_4_Cdouble
+    rgb_diff::Array_4_Cdouble
+    hsv_low::Array_4_Cdouble
+    hsv_high::Array_4_Cdouble
+    hsv_diff::Array_4_Cdouble
+    annot::Uint32
+    skip::Uint32
+    fill::Ptr{GMT_FILL}
+    label::Ptr{Uint8}
+end
+type GMT_BFN_COLOR
+    rgb::Array_4_Cdouble
+    hsv::Array_4_Cdouble
+    skip::Uint32
+    fill::Ptr{GMT_FILL}
+end
+bitstype int(WORD_SIZE/8)*sizeof(GMT_BFN_COLOR)*3 Array_3_GMT_BFN_COLOR
+type GMT_PALETTE
+    n_headers::Uint32
+    n_colors::Uint32
+    cpt_flags::Uint32
+    range::Ptr{GMT_LUT}
+    patch::Array_3_GMT_BFN_COLOR
+    header::Ptr{Ptr{Uint8}}
+    id::Cint
+    alloc_mode::GMT_enum_alloc
+    alloc_level::Uint32
+    model::Uint32
+    is_gray::Uint32
+    is_bw::Uint32
+    is_continuous::Uint32
+    has_pattern::Uint32
+    skip::Uint32
+    categorical::Uint32
+    z_adjust::Array_2_Uint32
+    z_mode::Array_2_Uint32
+    z_unit::Array_2_Uint32
+    z_unit_to_meter::Array_2_Cdouble
+end
+type GMT_IMAGE
+    _type::GMT_enum_type
+    ColorMap::Ptr{Cint}
+    header::Ptr{GMT_GRID_HEADER}
+    data::Ptr{Cuchar}
+    id::Cint
+    alloc_level::Uint32
+    alloc_mode::GMT_enum_alloc
+    ColorInterp::Ptr{Uint8}
+end
+type GMT_VECTOR
+    n_columns::Cint
+    n_rows::Cint
+    registration::GMT_enum_reg
+    _type::Ptr{GMT_enum_type}
+    data::Ptr{GMT_UNIVECTOR}
+    range::Array_2_Cdouble
+    command::Array_320_Uint8
+    remark::Array_160_Uint8
+    id::Cint
+    alloc_level::Uint32
+    alloc_mode::GMT_enum_alloc
+end
 # begin enum ANONYMOUS_37
 typealias ANONYMOUS_37 Uint32
 const GMT_IS_ROW_FORMAT = 0
 const GMT_IS_COL_FORMAT = 1
 # end enum ANONYMOUS_37
+bitstype int(WORD_SIZE/8)*sizeof(Cdouble)*6 Array_6_Cdouble
+type GMT_MATRIX
+    n_rows::Cint
+    n_columns::Cint
+    n_layers::Cint
+    shape::GMT_enum_fmt
+    registration::GMT_enum_reg
+    dim::Cint
+    size::Cint
+    _type::GMT_enum_type
+    range::Array_6_Cdouble
+    data::GMT_UNIVECTOR
+    command::Array_320_Uint8
+    remark::Array_160_Uint8
+    id::Cint
+    alloc_level::Uint32
+    alloc_mode::GMT_enum_alloc
+end
